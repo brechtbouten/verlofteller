@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verlofteller</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: transparent;
+    padding: 1.25rem;
+    color: #333;
+  }
+
+  .tool {
+    max-width: 480px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: .5rem;
+  }
+
+  .input-block {
+    background: #f7f8fa;
+    border: 1px solid #e5e8ef;
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  input[type="number"] {
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    color: #222;
+    border: 1.5px solid #dce0ea;
+    border-radius: 7px;
+    padding: 6px 8px;
+    outline: none;
+    background: #fff;
+    text-align: right;
+    transition: border-color .15s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+  input[type="number"]:focus { border-color: #0078d4; }
+
+  .w-d { width: 58px; }
+  .w-u { width: 58px; }
+  .w-m { width: 52px; }
+
+  .unit {
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+  }
+
+  hr.div {
+    border: none;
+    border-top: 1.5px solid #e8eaf0;
+    margin: 1.25rem 0;
+  }
+
+  /* RESULT */
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-box {
+    background: #f0f6ff;
+    border: 1px solid #cfe0f8;
+    border-radius: 10px;
+    padding: .85rem .5rem;
+    text-align: center;
+  }
+
+  .result-box .val {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0078d4;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .result-box .lbl {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #7aadde;
+    margin-top: 5px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    background: #e5eaf2;
+    border-radius: 20px;
+    height: 7px;
+    margin-bottom: .35rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 7px;
+    border-radius: 20px;
+    background: #0078d4;
+    transition: width .4s ease;
+    width: 0%;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 1rem;
+  }
+
+  /* DETAIL */
+  .detail-block {
+    background: #f7f8fa;
+    border: 1px solid #e5e8ef;
+    border-radius: 10px;
+    padding: .75rem 1rem;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    padding: 4px 0;
+    border-bottom: 1px solid #edf0f5;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .key { color: #888; }
+  .detail-row .val-d { color: #333; font-weight: 500; }
+  .detail-row.highlight .val-d { color: #0078d4; font-weight: 700; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    padding: 1.25rem 0 .25rem;
+    color: #bbb;
+    font-size: 13px;
+  }
+  .empty .icon { font-size: 32px; margin-bottom: .4rem; }
+
+  /* RESET */
+  .reset-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #bbb;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: .75rem;
+    display: block;
+  }
+  .reset-btn:hover { color: #c0392b; }
+
+  /* WARN */
+  .warn-banner {
+    display: none;
+    background: #fff4ce;
+    border: 1px solid #f0c040;
+    border-radius: 8px;
+    padding: .6rem .9rem;
+    font-size: 13px;
+    color: #7a5c00;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+<div class="tool">
+
+  <!-- TOTAAL -->
+  <div class="section-label">Totaal verlofsaldo</div>
+  <div class="input-block">
+    <div class="input-row">
+      <div class="input-group">
+        <input class="w-u" type="number" id="v-u" min="0" max="9999" step="1" placeholder="0" oninput="calc()">
+        <span class="unit">u</span>
+      </div>
+      <div class="input-group">
+        <input class="w-m" type="number" id="v-m" min="0" max="59" step="1" placeholder="0" oninput="calc()">
+        <span class="unit">min</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INGEPLAND -->
+  <div class="section-label">Reeds ingepland</div>
+  <div class="input-block">
+    <div class="input-row">
+      <div class="input-group">
+        <input class="w-d" type="number" id="g-d" min="0" max="999" step="1" placeholder="0" oninput="calc()">
+        <span class="unit">d</span>
+      </div>
+      <div class="input-group">
+        <input class="w-u" type="number" id="g-u" min="0" max="7" step="1" placeholder="0" oninput="calc()">
+        <span class="unit">u</span>
+      </div>
+      <div class="input-group">
+        <input class="w-m" type="number" id="g-m" min="0" max="59" step="1" placeholder="0" oninput="calc()">
+        <span class="unit">min</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-banner" id="warn">⚠ Ingepland verlof overschrijdt je totaal saldo.</div>
+
+  <hr class="div" style="margin-top:0;">
+
+  <!-- RESULT -->
+  <div id="result-empty" class="empty">
+    <div class="icon">🏖️</div>
+    Vul je verlofsaldo in om te berekenen
+  </div>
+
+  <div id="result-content" style="display:none;">
+
+    <div class="section-label" style="margin-bottom:.6rem;">Nog beschikbaar</div>
+
+    <div class="result-grid">
+      <div class="result-box">
+        <div class="val" id="r-dagen">0</div>
+        <div class="lbl">Dagen</div>
+      </div>
+      <div class="result-box">
+        <div class="val" id="r-uren">0</div>
+        <div class="lbl">Uren</div>
+      </div>
+      <div class="result-box">
+        <div class="val" id="r-min">0</div>
+        <div class="lbl">Minuten</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="prog-bar"></div>
+    </div>
+    <div class="progress-labels">
+      <span id="prog-l">0% ingepland</span>
+      <span id="prog-r">100% beschikbaar</span>
+    </div>
+
+    <div class="detail-block">
+      <div class="detail-row">
+        <span class="key">Totaal saldo</span>
+        <span class="val-d" id="d-totaal">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="key">Ingepland</span>
+        <span class="val-d" id="d-gepland">—</span>
+      </div>
+      <div class="detail-row highlight">
+        <span class="key">Nog beschikbaar</span>
+        <span class="val-d" id="d-over">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="key">Werkdag</span>
+        <span class="val-d" style="color:#bbb;">7u36 (456 min)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="reset-btn" onclick="reset()">↺ Reset</button>
+
+</div>
+<script>
+const WD = 456;
+
+function minToStr(m) {
+  const u   = Math.floor(m / 60);
+  const min = m % 60;
+  if (u === 0 && min === 0) return '0u';
+  if (min === 0) return u + 'u';
+  return u + 'u ' + String(min).padStart(2,'0') + 'min';
+}
+
+function val(id) { return parseInt(document.getElementById(id).value) || 0; }
+
+function calc() {
+  const totMin  = val('v-u') * 60 + val('v-m');
+  const gepMin  = val('g-d') * WD + val('g-u') * 60 + val('g-m');
+  const overMin = Math.max(0, totMin - gepMin);
+
+  const warn = document.getElementById('warn');
+  warn.style.display = (gepMin > totMin && totMin > 0) ? 'block' : 'none';
+
+  const empty   = document.getElementById('result-empty');
+  const content = document.getElementById('result-content');
+
+  if (totMin === 0) {
+    empty.style.display   = 'block';
+    content.style.display = 'none';
+    return;
+  }
+
+  empty.style.display   = 'none';
+  content.style.display = 'block';
+
+  const rDagen = Math.floor(overMin / WD);
+  const rest   = overMin % WD;
+  const rUren  = Math.floor(rest / 60);
+  const rMin   = rest % 60;
+
+  document.getElementById('r-dagen').textContent = rDagen;
+  document.getElementById('r-uren').textContent  = rUren;
+  document.getElementById('r-min').textContent   = rMin;
+
+  const pct = Math.min(100, Math.round(gepMin / totMin * 100));
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-l').textContent   = pct + '% ingepland';
+  document.getElementById('prog-r').textContent   = (100 - pct) + '% beschikbaar';
+
+  document.getElementById('d-totaal').textContent  = minToStr(totMin);
+  document.getElementById('d-gepland').textContent = minToStr(gepMin);
+  document.getElementById('d-over').textContent    = minToStr(overMin);
+}
+
+function reset() {
+  ['v-u','v-m','g-d','g-u','g-m'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('warn').style.display   = 'none';
+  document.getElementById('result-empty').style.display   = 'block';
+  document.getElementById('result-content').style.display = 'none';
+}
+</script>
+</body>
+</html>
